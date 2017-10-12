@@ -18,7 +18,9 @@
 #	|  $$$$$$/|  $$$$$$$| $$ | $$ | $$|  $$$$$$$|  $$$$$$/|  $$$$$$$| $$ | $$ | $$|  $$$$$$$
 #	 \______/  \_______/|__/ |__/ |__/ \_______/ \______/  \_______/|__/ |__/ |__/ \_______/
 #-----------------------------------------------------------------------------------------------
-import utils
+from utils import *
+from search import *
+#from termcolor import *
 #TEMP
 
 test = [[1,2,2,3,3],[2,2,2,1,3],[1,2,2,2,2],[1,1,1,1,1]]
@@ -107,7 +109,6 @@ def board_remove_group(board, group):
 	new_board.sort(key=lambda x: x.count(0) == board_height(board)) 
 
 	new_board = list(map(list, zip(*new_board)))
-	board_print(new_board)
 	return new_board
 
 	#primeiro transpomos para compactar verticalmente
@@ -128,4 +129,44 @@ def board_get_color(board, pos):
 def board_del_color(board, pos):
 	board[pos_l(pos)][pos_c(pos)] = 0
 def board_print(board):
-	utils.print_table(board, sep=' ')
+	print_table(board, sep=' ')
+"""
+def board_print_board(board):
+	colors=["grey", "red", "green","yellow", "blue", "magenta", "cyan"]
+	colors2 = ["on_grey", "on_red", "on_green","on_yellow", "on_blue", "on_magenta", "on_cyan"]
+	numbers = "  "
+	for i in range(board_width(board)):
+		numbers += str(i).rjust(2)
+	print(numbers)
+	a = 0
+	for line in board:
+		print(str(a).rjust(2), end="")
+		a += 1
+		for i in line:
+			cprint("  ", colors[int(i)],colors2[int(i)], end="")
+		print("")
+"""
+class sg_state:
+	def __init__(self, init_board):
+		self.board = init_board
+		self.current_groups = board_find_groups(init_board)
+
+	def __lt__(self, other):
+		return len(self.board) < len(other.board)
+
+	def remove_group(self, group):
+		return sg_state(board_remove_group(self.board, group))
+
+	def get_actions(self):
+		return [group for group in self.current_groups if len(group) > 1]
+
+
+class same_game(Problem):
+	def __init__(self, board):
+		Problem.__init__(self, sg_state(board), sg_state([[0 for i in range(board_width(board))] for i in range(board_width(board))]))
+	def actions(self, state):
+		return state.get_actions()
+	def result(self, state, action):
+		return state.remove_group(action)
+	def h(self, node):
+		return 1
