@@ -78,7 +78,7 @@ def board_get_group(board, pos):
 	return list(group)
 
 def board_find_groups(board):
-	"""devolve uma lista com os grupos de peças quese podem encontrar no tabuleiro, 
+	"""devolve uma lista com os grupos de peças que se podem encontrar no tabuleiro, 
 	sendo um grupo de peças uma lista com uma ou mais peças."""
 
 	groups = []
@@ -98,7 +98,7 @@ def board_find_groups(board):
 def board_remove_group(board, group):
 	"""remove  o  grupo  do  tabuleiro fazendo
 	a  compactação  vertical  e  horizontal  das  peças."""
-	new_board = [x[:] for x in board] #copy the board
+	new_board = [list(x) for x in board] #copy the board
 	for pos in group:
 		board_del_color(new_board, pos)
 
