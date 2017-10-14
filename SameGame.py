@@ -87,7 +87,7 @@ def board_find_groups(board):
 	for c in range(board_width(board)):
 		for l in range(board_height(board)):
 			curr = make_pos(l, c)
-			if curr not in visited:
+			if curr not in visited and color(board_get_color(board, curr)):
 				curr_group = board_get_group(board, curr)
 				groups.append(curr_group)
 				for pos in curr_group:
@@ -104,9 +104,9 @@ def board_remove_group(board, group):
 
 	new_board = list(map(list, zip(*new_board))) #this transposes the matrix
 	for row in new_board:
-		row.sort(key=lambda x: x != 0) #this pushes all zeroes to left
+		row.sort(key=lambda x: x != get_no_color()) #this pushes all zeroes to left
 
-	new_board.sort(key=lambda x: x.count(0) == board_height(board)) 
+	new_board.sort(key=lambda x: x.count(get_no_color()) == board_height(board)) 
 
 	new_board = list(map(list, zip(*new_board)))
 	return new_board
@@ -127,7 +127,7 @@ def board_height(board):
 def board_get_color(board, pos):
 	return board[pos_l(pos)][pos_c(pos)]
 def board_del_color(board, pos):
-	board[pos_l(pos)][pos_c(pos)] = 0
+	board[pos_l(pos)][pos_c(pos)] = get_no_color()
 def board_print(board):
 	print_table(board, sep=' ')
 """
@@ -163,7 +163,7 @@ class sg_state:
 
 class same_game(Problem):
 	def __init__(self, board):
-		Problem.__init__(self, sg_state(board), sg_state([[0 for i in range(board_width(board))] for i in range(board_width(board))]))
+		Problem.__init__(self, sg_state(board), sg_state([[0 for i in range(board_width(board))] for i in range(board_height(board))]))
 	def actions(self, state):
 		return state.get_actions()
 	def result(self, state, action):
